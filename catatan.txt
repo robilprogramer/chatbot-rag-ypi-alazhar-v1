@@ -1,0 +1,5 @@
+Instal Dari Lokal
+-pip install --no-index --find-links="C:\Robil Dev\Skripsi\v1-chatbot\v1-chatbot\packages" langchain_text_splitters
+
+# Pastikan berada di root folder project
+uvicorn api_main:app --reload

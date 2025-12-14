@@ -1,0 +1,385 @@
+# ============================================================================
+# FILE: config/prompts.yaml - IMPROVED VERSION
+# ============================================================================
+# Prompt Templates for Dual-Mode RAG Chatbot
+# YPI Al-Azhar Jakarta - 2025
+
+# ============================================================================
+# Informational Mode Prompts
+# ============================================================================
+informational:
+  # ===========================================================================
+  # SYSTEM PROMPT - Instruksi dasar untuk LLM
+  # ===========================================================================
+  system_prompt: |
+    ATURAN UTAMA - WAJIB DIPATUHI:
+    ================================
+    1. Anda HARUS SELALU menjawab dalam BAHASA INDONESIA
+    2. JANGAN PERNAH menjawab dalam bahasa Inggris atau bahasa lain
+    3. Jika konteks/dokumen dalam bahasa Inggris, TETAP jawab dalam Bahasa Indonesia
+    
+    IDENTITAS:
+    ==========
+    Anda adalah asisten virtual resmi Yayasan Pesantren Islam Al-Azhar Jakarta.
+    
+    TUGAS ANDA:
+    ===========
+    - Memberikan informasi akurat tentang kebijakan, biaya, program, dan layanan YPI Al-Azhar
+    - Menjawab pertanyaan berdasarkan dokumen resmi yang diberikan
+    - Menggunakan Bahasa Indonesia yang sopan dan profesional
+    - Jika informasi tidak tersedia, katakan dengan jelas
+    
+    PANDUAN PENTING:
+    ================
+    - Selalu rujuk ke dokumen resmi dalam konteks
+    - WAJIB menyebutkan TAHUN/PERIODE dokumen jika tersedia
+    - Gunakan format yang jelas dan mudah dipahami
+    - Jika ada angka/biaya, sebutkan dengan jelas beserta tahunnya
+    - Contoh format: "Berdasarkan dokumen tahun 2024/2025, biaya SPP adalah Rp..."
+
+  # ===========================================================================
+  # QUERY PROMPT - Template untuk menjawab pertanyaan
+  # ===========================================================================
+  query_prompt: |
+    INSTRUKSI WAJIB:
+    ================
+    1. Jawab HANYA dalam BAHASA INDONESIA
+    2. SEBUTKAN TAHUN/PERIODE dokumen jika ada
+    3. Format: "Berdasarkan dokumen [nama/tahun], ..."
+    
+    Pertanyaan: {question}
+    
+    Konteks dari dokumen resmi YPI Al-Azhar:
+    ----------------------------------------
+    {context}
+    ----------------------------------------
+    
+    ATURAN MENJAWAB:
+    ================
+    1. Baca konteks dengan teliti
+    2. Jawab berdasarkan informasi dalam konteks
+    3. **WAJIB** sebutkan tahun/periode jika ada dalam dokumen
+       - Contoh: "Menurut SK tahun 2024, ..."
+       - Contoh: "Berdasarkan dokumen Tahun Ajaran 2024/2025, ..."
+    4. Jika ada beberapa dokumen dengan tahun berbeda, sebutkan semua
+    5. Jika konteks tidak cukup: "Maaf, informasi tersebut tidak tersedia dalam dokumen yang saya akses saat ini."
+    6. Gunakan format rapi dengan poin-poin jika perlu
+    
+    Jawaban (dalam Bahasa Indonesia):
+
+  # ===========================================================================
+  # TEXT SUMMARY PROMPT - Untuk summarize text content
+  # ===========================================================================
+  text_summary_prompt: |
+    INSTRUKSI: Buat ringkasan dalam BAHASA INDONESIA.
+    
+    Anda adalah asisten yang bertugas membuat ringkasan teks untuk keperluan retrieval dan pencarian informasi.
+    
+    Ringkasan HARUS:
+    - Dalam BAHASA INDONESIA
+    - Mencakup poin-poin penting dan informasi kunci
+    - Mempertahankan data numerik (angka, tanggal, biaya, dll)
+    - Mempertahankan nama-nama penting (orang, tempat, institusi)
+    - **WAJIB menyebutkan TAHUN/PERIODE jika ada dalam teks**
+    - Ringkas namun informatif (maksimal 200 kata)
+    - Menggunakan bahasa yang jelas dan mudah dipahami
+    
+    Teks yang perlu diringkas:
+    {text}
+    
+    Ringkasan (dalam Bahasa Indonesia):
+
+  # ===========================================================================
+  # TABLE PROMPT - Untuk summarize table content
+  # ===========================================================================
+  table_prompt: |
+    INSTRUKSI: Buat ringkasan tabel dalam BAHASA INDONESIA.
+    
+    Anda diberikan informasi tabel berikut:
+    {table_content}
+    
+    Buatlah ringkasan tabel yang:
+    - Dalam BAHASA INDONESIA
+    - Menjelaskan apa yang ditampilkan dalam tabel
+    - Menyebutkan kolom-kolom penting beserta fungsinya
+    - Menyebutkan data/angka kunci (minimum, maksimum, rata-rata jika ada)
+    - **WAJIB menyebutkan TAHUN/PERIODE jika ada**
+    - Menjelaskan insight atau pola penting dari tabel
+    - Menyebutkan jumlah baris/data jika relevan
+    
+    Format ringkasan:
+    1. Deskripsi umum tabel (termasuk tahun/periode)
+    2. Kolom-kolom penting
+    3. Data kunci
+    4. Insight (jika ada)
+    
+    Ringkasan (dalam Bahasa Indonesia):
+
+  # ===========================================================================
+  # IMAGE PROMPT - Untuk summarize image content
+  # ===========================================================================
+  image_prompt: |
+    INSTRUKSI: Buat deskripsi gambar dalam BAHASA INDONESIA.
+    
+    Anda adalah asisten yang bertugas mendeskripsikan gambar untuk keperluan retrieval dan pencarian informasi.
+    
+    Buatlah deskripsi gambar yang:
+    - Dalam BAHASA INDONESIA
+    - Detail dan informatif
+    - Menjelaskan elemen visual penting (grafik, chart, diagram, logo, dll)
+    - Menyebutkan teks yang terlihat dalam gambar (jika ada)
+    - **WAJIB menyebutkan TAHUN/TANGGAL jika terlihat dalam gambar**
+    - Menjelaskan data/angka yang ditampilkan (jika ada)
+    - Menjelaskan warna, layout, dan komposisi jika relevan
+    - Ringkas namun lengkap
+    
+    Panduan berdasarkan jenis gambar:
+    - Screenshot: jelaskan konten yang ditampilkan, menu/tombol yang terlihat
+    - Diagram/Flowchart: jelaskan alur proses dari awal sampai akhir
+    - Tabel/Grafik: jelaskan data yang ditampilkan, trend, dan insight
+    - Foto: jelaskan objek, orang, lokasi, dan aktivitas yang terlihat
+    - Logo/Branding: jelaskan elemen desain dan teks
+    - Infografis: jelaskan informasi utama yang disampaikan
+    - Dokumen/Surat: sebutkan jenis dokumen, nomor, tanggal, dan isi penting
+    
+    Deskripsi (dalam Bahasa Indonesia):
+
+  # ===========================================================================
+  # COMBINED CONTEXT PROMPT - Untuk query dengan multiple context types
+  # ===========================================================================
+  combined_context_prompt: |
+    INSTRUKSI WAJIB: Jawab dalam BAHASA INDONESIA dan sebutkan TAHUN dokumen.
+    
+    Pertanyaan: {question}
+    
+    Konteks dari berbagai sumber:
+    
+    === TEKS ===
+    {text_context}
+    
+    === TABEL ===
+    {table_context}
+    
+    === GAMBAR ===
+    {image_context}
+    
+    ATURAN MENJAWAB:
+    1. Jawab dalam BAHASA INDONESIA
+    2. Analisis semua konteks yang diberikan
+    3. Prioritaskan informasi dari teks jika tersedia
+    4. Gunakan data dari tabel untuk mendukung jawaban
+    5. Referensikan informasi dari gambar jika relevan
+    6. **SEBUTKAN TAHUN/PERIODE dari setiap sumber**
+    7. Jawab dengan komprehensif namun ringkas
+    
+    Jawaban (dalam Bahasa Indonesia):
+
+# ============================================================================
+# Transactional Mode Prompts
+# ============================================================================
+transactional:
+  welcome_prompt: |
+    Selamat datang di Sistem Pendaftaran Siswa Baru YPI Al-Azhar! 👋
+    
+    Saya akan membantu Anda melalui proses pendaftaran secara online.
+    
+    Tahapan pendaftaran:
+    1. Data Pribadi Calon Siswa
+    2. Data Orang Tua/Wali
+    3. Data Akademik Sebelumnya
+    4. Upload Dokumen Persyaratan
+    5. Konfirmasi dan Pembayaran
+    
+    Mari kita mulai! Silakan berikan informasi berikut:
+
+  step_prompts:
+    data_pribadi: |
+      📝 STEP 1: Data Pribadi Calon Siswa
+      
+      Mohon berikan informasi berikut:
+      1. Nama Lengkap (sesuai Akta Kelahiran)
+      2. Tempat Lahir
+      3. Tanggal Lahir (format: DD/MM/YYYY)
+      4. Jenis Kelamin
+      5. Agama
+      6. Alamat Lengkap
+      7. No. Telepon
+      
+      Contoh format:
+      Nama: Ahmad Fauzi
+      Tempat Lahir: Jakarta
+      Tanggal Lahir: 15/08/2015
+      ...
+
+    data_orang_tua: |
+      👨‍👩‍👧 STEP 2: Data Orang Tua/Wali
+      
+      Mohon berikan informasi:
+      
+      AYAH:
+      1. Nama Lengkap
+      2. Pekerjaan
+      3. No. Telepon
+      4. Email
+      
+      IBU:
+      1. Nama Lengkap
+      2. Pekerjaan
+      3. No. Telepon
+      4. Email
+
+    data_akademik: |
+      🎓 STEP 3: Data Akademik Sebelumnya
+      
+      Untuk calon siswa SD:
+      1. Nama TK/RA sebelumnya
+      2. Tahun lulus
+      
+      Untuk calon siswa SMP:
+      1. Nama SD sebelumnya
+      2. NISN (Nomor Induk Siswa Nasional)
+      3. Nilai rata-rata rapor kelas 6
+      
+      Untuk calon siswa SMA:
+      1. Nama SMP sebelumnya
+      2. NISN
+      3. Nilai UN/Ujian Akhir
+
+    upload_dokumen: |
+      📎 STEP 4: Upload Dokumen Persyaratan
+      
+      Silakan upload dokumen berikut (format: PDF, JPG, PNG | Max: 5MB):
+      
+      Dokumen Wajib:
+      1. ✅ Akta Kelahiran
+      2. ✅ Kartu Keluarga (KK)
+      3. ✅ Foto 3x4 (background merah)
+      4. ✅ Rapor semester terakhir
+      
+      Dokumen Tambahan (jika ada):
+      - Sertifikat prestasi
+      - Surat keterangan sehat
+      - Kartu KIP/KKS (untuk beasiswa)
+      
+      Upload satu per satu dengan format:
+      Upload: [nama_dokumen] - [file]
+
+    konfirmasi: |
+      ✅ STEP 5: Konfirmasi Data
+      
+      Berikut ringkasan data Anda:
+      
+      {summary}
+      
+      Biaya Pendaftaran:
+      - Formulir: Rp 250.000
+      - Uang Pangkal: Rp 5.000.000
+      - Total: Rp 5.250.000
+      
+      Apakah data sudah benar? (Ya/Tidak)
+      
+      Jika "Ya", Anda akan diarahkan ke pembayaran.
+
+  validation_prompts:
+    missing_info: |
+      ⚠️ Informasi belum lengkap!
+      
+      Mohon lengkapi data berikut:
+      {missing_fields}
+
+    invalid_format: |
+      ❌ Format tidak sesuai!
+      
+      {error_message}
+      
+      Contoh format yang benar:
+      {example}
+
+    document_error: |
+      ⚠️ Upload dokumen gagal!
+      
+      Alasan: {reason}
+      
+      Pastikan:
+      - File dalam format PDF, JPG, atau PNG
+      - Ukuran maksimal 5MB
+      - File tidak corrupt
+
+  completion_prompt: |
+    🎉 Pendaftaran Berhasil!
+    
+    Nomor Pendaftaran: {registration_number}
+    
+    Status: Menunggu Pembayaran
+    
+    Silakan lakukan pembayaran melalui:
+    - Virtual Account: {va_number}
+    - QRIS: {qris_url}
+    
+    Batas waktu pembayaran: {deadline}
+    
+    Setelah pembayaran, Anda akan menerima:
+    1. Email konfirmasi
+    2. Kartu ujian (jika ada seleksi)
+    3. Informasi jadwal daftar ulang
+    
+    Terima kasih telah memilih YPI Al-Azhar! 🙏
+
+# ============================================================================
+# Error Messages
+# ============================================================================
+errors:
+  not_found: |
+    Maaf, saya tidak dapat menemukan informasi yang Anda cari dalam basis data kami.
+    
+    Saran:
+    - Coba gunakan kata kunci yang berbeda
+    - Hubungi customer service: (021) 1234-5678
+    - Email: info@alazhar.sch.id
+
+  system_error: |
+    Maaf, terjadi kesalahan sistem. 
+    
+    Silakan coba lagi dalam beberapa saat atau hubungi administrator.
+    
+    Kode Error: {error_code}
+
+  session_timeout: |
+    Sesi Anda telah berakhir karena tidak ada aktivitas.
+    
+    Silakan mulai pendaftaran baru.
+
+# ============================================================================
+# Response Formatting
+# ============================================================================
+formatting:
+  table_header: "### {title}\n"
+  bullet_point: "- {item}\n"
+  numbered_list: "{number}. {item}\n"
+  divider: "\n---\n"
+  
+# ============================================================================
+# Fallback Responses
+# ============================================================================
+fallback:
+  unclear: |
+    Maaf, saya kurang memahami pertanyaan Anda.
+    
+    Contoh pertanyaan yang bisa saya bantu:
+    - "Berapa biaya SPP SD Al-Azhar?"
+    - "Bagaimana cara mendaftar beasiswa?"
+    - "Jam operasional kantor administrasi?"
+    - "Saya ingin mendaftar siswa baru"
+
+  out_of_scope: |
+    Pertanyaan Anda berada di luar cakupan layanan saya.
+    
+    Saya hanya dapat membantu informasi tentang:
+    - Kebijakan dan biaya pendidikan
+    - Proses pendaftaran siswa baru
+    - Program akademik dan ekstrakurikuler
+    - Fasilitas dan lokasi sekolah
+    
+    Untuk pertanyaan lain, silakan hubungi:
+    📞 (xxx) xxxx-xxxx
+    📧 info@alazhar.sch.id

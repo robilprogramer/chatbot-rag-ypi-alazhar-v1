@@ -1,0 +1,187 @@
+# General Settings
+app:
+  name: "YPI Al-Azhar RAG Chatbot"
+  version: "1.0.0"
+  environment: "development"  # development, staging, production
+  
+# Chatbot Modes
+modes:
+  default: "informational"  # informational or transactional
+
+# ============================================================================
+# SUMMARIZATION SETTINGS
+# ============================================================================
+summarization:
+  text:
+    enabled: true           # false = gunakan text asli (HEMAT BIAYA)
+    max_length: 4000        # max karakter per text untuk summarize
+  tables:
+    enabled: true           # true = table di-summarize (recommended)
+    max_length: 3000        # max karakter per table
+  images:
+    enabled: false           # true = image di-summarize dengan vision model
+    max_size: [1024, 1024]  # resize image sebelum summarize  
+
+# OCR Configuration
+ocr:
+  method: "unstructured"  # unstructured, tesseract, paddle, pymupdf
+  unstructured:
+    strategy: "hi_res"  # hi_res, fast, ocr_only, auto
+    extract_images: true
+    extract_tables: true
+  tesseract:
+    lang: "ind+eng"
+    config: "--psm 6"
+  paddle:
+    lang: "en"
+    use_angle_cls: true
+
+# Chunking Configuration
+chunking:
+  strategy: "fixed_size"  # fixed_size or semantic
+  fixed_size:
+    chunk_size: 1000
+    chunk_overlap: 200
+    separators: ["\n\n", "\n", ".", " ", ""]
+  semantic:
+    breakpoint_threshold_type: "percentile"
+    breakpoint_threshold: 95
+
+# Embedding Configuration
+embeddings:
+  model: "huggingface"  # openai or huggingface
+  openai:
+    model_name: "text-embedding-3-small"
+    dimensions: 1536
+  huggingface:
+    model_name: "sentence-transformers/all-MiniLM-L6-v2"
+    dimensions: 384
+    device: "cpu"  # cpu or cuda
+
+# ============================================================================
+# RETRIEVAL CONFIGURATION - WITH RERANKER
+# ============================================================================
+retrieval:
+  method: "hybrid"  # dense, bm25, or hybrid
+  top_k: 5  # Ambil lebih banyak untuk di-rerank (jika reranker enabled)
+  
+  hybrid:
+    dense_weight: 0.7
+    bm25_weight: 0.3
+  
+  # ===========================================================================
+  # RERANKER CONFIGURATION
+  # ===========================================================================
+  # Reranker akan mengurutkan ulang hasil retrieval berdasarkan relevansi
+  # Keuntungan: Hasil lebih akurat dan relevan
+  # Kekurangan: Sedikit lebih lambat (+100-200ms)
+  reranker:
+    enabled: false  # Set true untuk mengaktifkan reranker
+    model: "cross-encoder/ms-marco-MiniLM-L-6-v2"  # Model reranker
+    top_n: 5  # Jumlah dokumen setelah rerank (final results)
+    
+    # Model alternatif (pilih salah satu):
+    # - "cross-encoder/ms-marco-MiniLM-L-6-v2" (fast, good quality)
+    # - "cross-encoder/ms-marco-MiniLM-L-12-v2" (slower, better quality)
+    # - "BAAI/bge-reranker-base" (multilingual, bagus untuk Indonesia)
+    # - "BAAI/bge-reranker-large" (best quality, slowest)
+
+# Vector Database
+vectordb:
+  type: "chroma"
+  chroma:
+    collection_name: "ypi_knowledge_base"
+    persist_directory: "./chroma_db"
+    distance_function: "cosine"
+
+# ============================================================================
+# LLM Configuration
+# ============================================================================
+llm:
+  provider: "openai"  # openai, gemini, atau ollama
+  
+  openai:
+    model: "gpt-4o-mini"
+    temperature: 0
+    max_tokens: 1024
+    streaming: true
+    vision_model: "gpt-4o-mini"
+    
+  gemini:
+    model: "gemini-2.0-flash"
+    temperature: 0
+    max_tokens: 1024
+    vision_model: "gemini-2.0-flash"
+    
+  ollama:
+    model: "llama3"
+    temperature: 0
+    max_tokens: 1024
+    vision_model: "llama3.2-vision"
+    # Tambahan untuk Ollama agar jawab dalam Bahasa Indonesia
+    system_prompt_prefix: "PENTING: Selalu jawab dalam Bahasa Indonesia."
+
+# Transactional Mode
+transactional:
+  enrollment_steps:
+    - "data_pribadi"
+    - "data_orang_tua"
+    - "data_akademik"
+    - "upload_dokumen"
+    - "konfirmasi"
+  session_timeout: 3600  # seconds
+  max_file_size: 5242880  # 5MB in bytes
+  allowed_file_types: ["pdf", "jpg", "jpeg", "png"]
+  
+# Database Configuration
+database:
+  type: "postgresql"
+  host: "localhost"
+  port: 5432
+  name: "ypi_alazhar_db"
+  user: "postgres"
+  password: "${DB_PASSWORD}"
+
+# Payment Gateway
+payment:
+  provider: "midtrans"
+  server_key: "${MIDTRANS_SERVER_KEY}"
+  client_key: "${MIDTRANS_CLIENT_KEY}"
+  is_production: false
+
+# Notification Services
+notification:
+  email:
+    enabled: true
+    smtp_host: "smtp.gmail.com"
+    smtp_port: 587
+    sender_email: "${EMAIL_SENDER}"
+    sender_password: "${EMAIL_PASSWORD}"
+  sms:
+    enabled: false
+  whatsapp:
+    enabled: false
+
+# Logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/chatbot.log"
+  max_bytes: 10485760
+  backup_count: 5
+
+# Performance
+performance:
+  max_concurrent_requests: 100
+  timeout: 30
+  cache_enabled: true
+  cache_ttl: 3600
+
+# Paths
+paths:
+  data_dir: "./data"
+  pdf_dir: "./data/pdfs"
+  extracted_dir: "./data/extracted_data"
+  processed_dir: "./data/processed"
+  models_dir: "./models"
+  logs_dir: "./logs"
