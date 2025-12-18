@@ -4,8 +4,9 @@ from api.chunking import router as chunking_router
 from api.vectorstore_router import router as vectorstore_router
 from api.embeding import router as embedding_router  # ⬅️ TAMBAH INI
 from api.chat import router as chat_router  # ⬅️ TAMBAH INI
+from api.document_router import router as document_router
 app = FastAPI(
-    title="Document Chunking API",
+    title="Chatbot API",
     version="1.0.0"
 )
 
@@ -18,7 +19,8 @@ app.add_middleware(
     allow_headers=["*"],  # semua header
 )
 
-app.include_router(chunking_router)        # router untuk chunking
-app.include_router(vectorstore_router)     # router untuk mengambil dokumen dari vectorstore
-app.include_router(embedding_router)       # /api/embed  ✅ BARU
+app.include_router(chunking_router)        
+app.include_router(vectorstore_router)    
+app.include_router(embedding_router)      
 app.include_router(chat_router)  
+app.include_router(document_router)
