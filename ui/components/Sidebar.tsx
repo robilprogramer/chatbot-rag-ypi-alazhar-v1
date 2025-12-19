@@ -23,11 +23,6 @@ const menuItems = [
     icon: LayoutDashboard 
   },
   { 
-    name: 'Upload Dokumen', 
-    href: '/upload', 
-    icon: Upload 
-  },
-  { 
     name: 'Dokumen', 
     href: '/documents', 
     icon: FolderOpen 
