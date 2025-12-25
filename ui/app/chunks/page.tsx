@@ -9,8 +9,10 @@ import ChunkForm from "@/components/chunks/ChunkForm";
 import ProcessDocumentForm from "@/components/chunks/ProcessDocumentForm";
 import { Loader2, RefreshCw, Plus, X } from "lucide-react";
 import toast from "react-hot-toast";
-
+import { Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
 export default function ChunksPage() {
+  const router = useRouter();
   const [chunks, setChunks] = useState<ChunkResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedChunk, setSelectedChunk] = useState<{
@@ -66,7 +68,9 @@ export default function ChunksPage() {
     setShowProcessForm(false);
     await fetchChunks();
   };
-
+  const handleReviewClick = () => {
+    router.push(`/chunks/bulk-review`);
+  };
   return (
     <div className="flex min-h-screen">
       <Sidebar />
@@ -77,6 +81,13 @@ export default function ChunksPage() {
             <p className="text-gray-500">{chunks.length} chunks</p>
           </div>
           <div className="flex gap-3">
+            <button
+              onClick={handleReviewClick}
+              className="btn-secondary flex items-center gap-2"
+            >
+              <Eye className="h-4 w-4" />
+              Review
+            </button>
             <button
               onClick={fetchChunks}
               disabled={loading}

@@ -71,3 +71,9 @@ export interface RawTextResponse {
   raw_text: string;
   text_length: number;
 }
+
+
+// Tambahkan interface baru
+export interface DocumentRawTextUpdateRequest {
+  raw_text: string;
+}

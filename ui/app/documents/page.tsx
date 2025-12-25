@@ -170,6 +170,14 @@ export default function DocumentsPage() {
           <div className="mb-6">
             <ChunkProcessForm
               documentId={chunkingDocument}
+              filename={
+                documents.find((doc) => doc.id === chunkingDocument)?.filename ||
+                ""
+              }
+              content={
+                documents.find((doc) => doc.id === chunkingDocument)
+                  ?.raw_text || ""
+              }
               onComplete={handleChunkComplete}
               onCancel={() => setChunkingDocument(null)}
             />

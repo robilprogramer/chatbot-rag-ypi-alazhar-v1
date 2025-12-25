@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from models.document import DocumentStatus,ExtractionMethod
 from repositories.document_repository import DocumentRepository
@@ -255,3 +256,19 @@ class DocumentService:
         
         # Delete from database
         return self.repository.delete(document_id)
+    
+    
+    def update_raw_text(self, document_id: int, raw_text: str):
+        
+        print(f"Updating raw_text for document {document_id}...")
+        print(f"New raw_text length: {len(raw_text)} characters")
+        document = self.repository.get_by_id(document_id)
+        if not document:
+            raise ValueError("Document not found")
+
+        document.raw_text = raw_text
+        document.text_length = len(raw_text)
+        document.updated_at = datetime.utcnow()
+        self.db.commit()
+        self.db.refresh(document)
+        return document

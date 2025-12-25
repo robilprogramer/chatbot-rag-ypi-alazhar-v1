@@ -11,7 +11,8 @@ from schemas.document_schema import (
     DocumentProcessResponse,
     DocumentResponse,
     DocumentDetailResponse,
-    DocumentListResponse
+    DocumentListResponse,
+    DocumentRawTextUpdateRequest
 )
 
 router = APIRouter(prefix="/api/documents", tags=["Documents"])
@@ -164,3 +165,30 @@ def get_raw_text(
         "raw_text": document.raw_text,
         "text_length": document.text_length
     }
+    
+# ------------------------------
+# UPDATE / Update raw text
+# ------------------------------
+@router.put("/{document_id}/raw-text")
+def update_raw_text(
+    document_id: int,
+    payload: DocumentRawTextUpdateRequest,
+    service: DocumentService = Depends(get_document_service)
+):
+    """
+    Update raw_text document (manual correction / normalization)
+    """
+    try:
+        document = service.update_raw_text(
+            document_id=document_id,
+            raw_text=payload.raw_text
+        )
+        return {
+        "document_id": document.id,
+        "filename": document.original_filename,
+        "raw_text": document.raw_text,
+        "text_length": document.text_length
+        }
+
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))    

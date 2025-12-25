@@ -76,3 +76,6 @@ class DocumentProcessResponse(BaseModel):
     text_length: Optional[int]
     tables_count: Optional[int]
     images_count: Optional[int]
+    
+class DocumentRawTextUpdateRequest(BaseModel):
+    raw_text: str = Field(..., description="Updated raw text content")    

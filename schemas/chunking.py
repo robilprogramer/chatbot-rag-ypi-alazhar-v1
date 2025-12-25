@@ -50,3 +50,11 @@ class ChatResponse(BaseModel):
     """
     answer: str
     sources: List[SourceDocument]
+    
+class ChunkBulkUpdateItem(BaseModel):
+    id: int
+    content: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+class ChunkBulkUpdateRequest(BaseModel):
+    chunks: List[ChunkBulkUpdateItem]    

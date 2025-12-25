@@ -9,12 +9,16 @@ import toast from "react-hot-toast";
 
 interface ChunkProcessFormProps {
   documentId: number;
+  filename: string;
+  content: string;
   onComplete: () => void;
   onCancel: () => void;
 }
 
 export default function ChunkProcessForm({
   documentId,
+  filename,
+  content,
   onComplete,
   onCancel,
 }: ChunkProcessFormProps) {
@@ -26,15 +30,12 @@ export default function ChunkProcessForm({
   const handleChunk = async () => {
     try {
       setProcessing(true);
-      const result = await documentService.chunkDocument(
-        documentId,
-        method,
-        chunkSize,
-        overlap
-      );
-
+      const result = await documentService.chunkDocument(filename, content);
+      //  toast.success(
+      //   `To Do, Kirim Ke Proses Chunking`
+      // );
       toast.success(
-        `Berhasil! ${result.total_chunks} chunks telah dibuat`
+        `Berhasil! ${result.metadata_json} chunks telah dibuat`
       );
       onComplete();
     } catch (err) {

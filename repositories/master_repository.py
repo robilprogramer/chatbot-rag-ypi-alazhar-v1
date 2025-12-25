@@ -67,3 +67,46 @@ class MasterRepository:
         self.db.delete(chunk)
         self.db.commit()
         return True    
+    
+    def get_chunks_by_filename(self, filename: str) -> List[ChunkModel]:
+        return (
+            self.db.query(ChunkModel)
+            .filter(ChunkModel.filename == filename)
+            .all()
+        )
+        
+    def bulk_update_chunks_by_filename(
+        self,
+        filename: str,
+        updates: list
+    ) -> int:
+        """
+        updates = [
+            { "id": 1, "content": "...", "metadata": {...} }
+        ]
+        """
+        updated_count = 0
+
+        for item in updates:
+            chunk = (
+                self.db.query(ChunkModel)
+                .filter(
+                    ChunkModel.id == item["id"],
+                    ChunkModel.filename == filename
+                )
+                .first()
+            )
+
+            if not chunk:
+                continue
+
+            if item.get("content") is not None:
+                chunk.content = item["content"]
+
+            if item.get("metadata") is not None:
+                chunk.metadata_json = item["metadata"]
+
+            updated_count += 1
+
+        self.db.commit()
+        return updated_count

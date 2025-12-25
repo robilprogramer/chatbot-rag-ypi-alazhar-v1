@@ -7,6 +7,7 @@ import {
   DocumentProcessResponse,
   DocumentListResponse,
   RawTextResponse,
+  DocumentRawTextUpdateRequest,
 } from "@/types/document";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -101,14 +102,14 @@ class DocumentService {
   /**
    * Chunk document
    */
-  async chunkDocument(
+  async chunkDocumentOld(
     documentId: number,
     method: string = "semantic",
     chunkSize: number = 1500,
     overlap: number = 200
   ): Promise<any> {
     const response = await axios.post(
-      `${this.baseUrl}/${documentId}/chunk`,
+      `${this.baseUrl}/${documentId}/process`,
       null,
       {
         params: {
@@ -121,6 +122,23 @@ class DocumentService {
 
     return response.data;
   }
+  async chunkDocument(filename: string, content: string): Promise<any> {
+    console.log("chunkDocument called with:", { filename, content });
+    const response = await axios.post(
+      `${API_BASE_URL}/api/chunks/process`,
+      {
+        documents: [
+          {
+            filename: filename,
+            content: content
+          }
+        ]
+      }
+    );
+
+    return response.data;
+  }
+
 
   /**
    * Get chunks for document
@@ -160,6 +178,27 @@ class DocumentService {
       default:
         return "bg-gray-100 text-gray-800";
     }
+  }
+
+  // UPDATE - Update raw text
+  async updateRawText(
+    documentId: number,
+    payload: DocumentRawTextUpdateRequest
+  ): Promise<Document> {
+    const response = await fetch(`${this.baseUrl}/${documentId}/raw-text`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Failed to update raw text");
+    }
+
+    return response.json();
   }
 }
 

@@ -49,3 +49,19 @@ export interface EmbedResponse {
   total_chunks: number;
   message: string;
 }
+
+// Tambahkan ke file types yang sudah ada
+export interface ChunkUpdateItem {
+  id: number;
+  content?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface ChunkBulkUpdateRequest {
+  chunks: ChunkUpdateItem[];
+}
+
+export interface ChunkBulkUpdateResponse {
+  filename: string;
+  updated_count: number;
+}

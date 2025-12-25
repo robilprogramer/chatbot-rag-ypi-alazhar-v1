@@ -4,6 +4,8 @@ import {
   ChunkUpdateRequest,
   StandardResponse,
   ChunkResponse,
+  ChunkUpdateItem,
+  ChunkBulkUpdateResponse,
 } from "@/types/chunk";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -114,6 +116,51 @@ export class ChunkService {
 
     return response.json();
   }
+  // READ - Get chunks by filename
+  async getChunksByFilename(
+    filename: string
+  ): Promise<StandardResponse<ChunkResponse[]>> {
+    const response = await fetch(
+      `${this.baseUrl}/by-filename/${encodeURIComponent(filename)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Gagal memuat chunks");
+    }
+
+    return response.json();
+  }
+  // UPDATE - Bulk update by filename
+  async bulkUpdateByFilename(
+    filename: string,
+    chunks: ChunkUpdateItem[]
+  ): Promise<StandardResponse<ChunkBulkUpdateResponse>> {
+    const response = await fetch(
+      `${this.baseUrl}/bulk-update/by-filename/${encodeURIComponent(filename)}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ chunks }),
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || "Gagal update chunks");
+    }
+
+    return response.json();
+  }
+
 }
 
 export const chunkService = new ChunkService();
