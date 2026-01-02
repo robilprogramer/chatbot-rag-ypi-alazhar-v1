@@ -63,7 +63,7 @@ export default function ChunkProcessForm({
       </div>
 
       <div className="space-y-4">
-        <div>
+        <div hidden>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Chunking Method
           </label>
@@ -80,7 +80,7 @@ export default function ChunkProcessForm({
           </p>
         </div>
 
-        <div>
+        <div hidden>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Chunk Size: {chunkSize} characters
           </label>
@@ -99,7 +99,7 @@ export default function ChunkProcessForm({
           </div>
         </div>
 
-        <div>
+        <div hidden>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Overlap: {overlap} characters
           </label>

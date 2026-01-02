@@ -7,9 +7,24 @@ router = APIRouter(prefix="/api/chat", tags=["Chat"])
 
 @router.post("/")
 async def chat(req: ChatRequest):
+    """
+    Chat endpoint - Simple interface
+    
+    Request:
+        - question: str (user query)
+    
+    Response:
+        - answer: str
+        - sources: List[Dict]
+        - metadata: Dict
+    """
     try:
-        query_chain = get_query_chain()   # 🔥 cached
+        # Get singleton query chain
+        query_chain = get_query_chain()
+        
+        # Execute RAG pipeline
         result = query_chain.query(req.question)
+        
         return result
 
     except Exception as e:

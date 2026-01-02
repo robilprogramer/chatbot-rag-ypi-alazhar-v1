@@ -9,9 +9,10 @@
   }
 
   * {
-    @apply border-border;
+    @apply border-gray-200;
   }
-  
+
+
   body {
     @apply bg-gray-50 text-gray-900;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -19,6 +20,7 @@
 }
 
 @layer components {
+
   /* Custom scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
@@ -55,9 +57,13 @@
   }
 
   @keyframes typing {
-    0%, 60%, 100% {
+
+    0%,
+    60%,
+    100% {
       transform: translateY(0);
     }
+
     30% {
       transform: translateY(-10px);
     }

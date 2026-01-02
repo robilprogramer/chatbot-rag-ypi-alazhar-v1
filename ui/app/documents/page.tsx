@@ -9,7 +9,8 @@ import { Document, DocumentStatus } from "@/types/document";
 import DocumentList from "@/components/documents/DocumentList";
 import DocumentUploadForm from "@/components/documents/DocumentUploadForm";
 import DocumentDetailModal from "@/components/documents/DocumentDetailModal";
-import RawTextModal from "@/components/documents/RawTextModal";
+// import RawTextModal from "@/components/documents/RawTextModal";
+import RawTextModal from "@/components/documents/RichTextModal"; // Komponen BARU
 import ChunkProcessForm from "@/components/documents/ChunkProcessForm";
 import {
   Upload,

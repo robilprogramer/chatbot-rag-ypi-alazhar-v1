@@ -1,261 +1,119 @@
-
 # ============================================================================
-# FILE: utils/smart_retriever.py
+# FILE: utils/smart_retriever.py - SIMPLIFIED
 # ============================================================================
 """
-Smart Retriever dengan Context-Aware Filtering
-Automatic filter extraction dari query
+Simplified Smart Retriever - Pure Embedding Search
 """
 
-from typing import List, Dict, Optional
+from typing import List, Dict
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
-from langchain_community.retrievers import BM25Retriever
-from langchain_classic.retrievers import EnsembleRetriever
+import numpy as np
 
 
 class SmartRetriever:
     """
-    Smart Retriever yang bisa filter based on metadata
-    
-    Features:
-    - Auto-extract filter dari query
-    - Metadata-based filtering (jenjang, cabang, tahun)
-    - Hybrid retrieval (dense + BM25)
-    - Fallback mechanism
+    Simplified retriever with pure embedding-based search
     """
     
     def __init__(
         self,
         vectorstore: Chroma,
-        query_parser,
+        embedding_function,
         top_k: int = 5,
-        use_hybrid: bool = True,
-        dense_weight: float = 0.7,
-        bm25_weight: float = 0.3
+        similarity_threshold: float = 0.5,
+        min_docs_required: int = 2  # ✅ Minimal 2 dokumen relevan
     ):
         self.vectorstore = vectorstore
-        self.query_parser = query_parser
+        self.embedding_function = embedding_function
         self.top_k = top_k
-        self.use_hybrid = use_hybrid
-        self.dense_weight = dense_weight
-        self.bm25_weight = bm25_weight
+        self.similarity_threshold = similarity_threshold
+        self.min_docs_required = min_docs_required
+        self.collection = vectorstore._collection
     
-    def retrieve(
-        self,
-        query: str,
-        filters: Optional[Dict] = None,
-        top_k: Optional[int] = None
-    ) -> List[Document]:
+    def retrieve(self, query: str) -> List[Document]:
         """
-        Main retrieval method dengan auto-filtering
-        
-        Args:
-            query: User query
-            filters: Manual filters (optional, will override auto-extraction)
-            top_k: Override default top_k
-            
-        Returns:
-            List of relevant documents
+        Main retrieval flow:
+        1. Preprocess query
+        2. Embed query
+        3. Search vector database
+        4. Filter by similarity threshold
+        5. Return documents
         """
-        if top_k is None:
-            top_k = self.top_k
+        print(f"\n{'='*60}")
+        print(f"🔍 RETRIEVAL PIPELINE")
+        print(f"{'='*60}")
         
-        # Auto-extract filters dari query jika tidak ada manual filter
-        if filters is None:
-            parsed = self.query_parser.parse_query(query)
-            filters = self._create_filter_dict(parsed)
+        # Step 1: Preprocess query
+        cleaned_query = query.lower().strip()
+        print(f"📝 Query: '{cleaned_query}'")
         
-        print(f"\n🔍 Smart Retrieval:")
-        print(f"   Query: {query}")
-        if filters:
-            print(f"   Filters: {filters}")
+        # Step 2: Embed query
+        query_embedding = self.embedding_function.embed_query(cleaned_query)
+        print(f"🔢 Embedding dimension: {len(query_embedding)}")
         
-        # Try dengan filter dulu
-        if filters:
-            docs = self._retrieve_with_filter(query, filters, top_k)
-            
-            # Jika hasil <2, coba tanpa filter
-            if len(docs) < 2:
-                print(f"   ⚠️ Only {len(docs)} results with filter, trying without...")
-                docs_no_filter = self._retrieve_no_filter(query, top_k)
-                
-                # Combine results (filter results first, then no-filter)
-                seen_ids = {id(doc) for doc in docs}
-                for doc in docs_no_filter:
-                    if id(doc) not in seen_ids:
-                        docs.append(doc)
-                        if len(docs) >= top_k:
-                            break
-        else:
-            # No filter, langsung retrieve
-            docs = self._retrieve_no_filter(query, top_k)
-        
-        print(f"   ✅ Retrieved {len(docs)} documents")
-        
-        # Print metadata dari hasil
-        if docs:
-            print(f"   📊 Results metadata:")
-            for i, doc in enumerate(docs[:3]):
-                meta = doc.metadata
-                print(f"      {i+1}. {meta.get('jenjang', '?')} - "
-                      f"{meta.get('cabang', '?')} - "
-                      f"{meta.get('tahun', '?')}")
-        
-        return docs
-    
-    def _create_filter_dict(self, parsed: Dict) -> Optional[Dict]:
-        """Create Chroma filter dict dari parsed query"""
-        filter_dict = {}
-        
-        # Only add non-None values
-        if parsed.get('jenjang'):
-            filter_dict['jenjang'] = parsed['jenjang']
-        
-        if parsed.get('cabang'):
-            filter_dict['cabang'] = parsed['cabang']
-        
-        if parsed.get('tahun'):
-            filter_dict['tahun'] = parsed['tahun']
-        
-        if parsed.get('kategori'):
-            filter_dict['kategori'] = parsed['kategori']
-        
-        return filter_dict if filter_dict else None
-    
-    def _retrieve_with_filter(
-        self,
-        query: str,
-        filters: Dict,
-        top_k: int
-    ) -> List[Document]:
-        """Retrieve dengan metadata filtering"""
-        try:
-            # Convert our filter to Chroma's where format
-            # Convert our filter to Chroma's where format
-            conditions = [{k: {"$eq": v}} for k, v in filters.items()]
-
-            if len(conditions) == 1:
-                # Only one filter → don't use $and
-                where_clause = conditions[0]
-            else:
-                # Multiple filters → must use $and
-                where_clause = {"$and": conditions}
-
-
-            
-            docs = self.vectorstore.similarity_search(
-                query,
-                k=top_k * 2,  # Get more, then we'll filter
-                filter=where_clause
-            )
-            
-            return docs[:top_k]
-            
-        except Exception as e:
-            print(f"   ⚠️ Filter retrieval error: {e}")
-            return []
-    
-    def _retrieve_no_filter(
-        self,
-        query: str,
-        top_k: int
-    ) -> List[Document]:
-        """Retrieve tanpa filtering (fallback)"""
-        return self.vectorstore.similarity_search(query, k=top_k)
-    
-    def retrieve_by_metadata(
-        self,
-        jenjang: Optional[str] = None,
-        cabang: Optional[str] = None,
-        tahun: Optional[str] = None,
-        limit: int = 10
-    ) -> List[Document]:
-        """
-        Retrieve langsung by metadata (tanpa query)
-        Useful untuk browsing/exploring
-        """
-        filter_dict = {}
-        
-        if jenjang:
-            filter_dict['jenjang'] = jenjang
-        if cabang:
-            filter_dict['cabang'] = cabang
-        if tahun:
-            filter_dict['tahun'] = tahun
-        
-        if not filter_dict:
-            print("⚠️ No filters provided")
-            return []
-        
-        where_clause = {k: {"$eq": v} for k, v in filter_dict.items()}
-        
-        results = self.vectorstore._collection.get(
-            where=where_clause,
-            limit=limit,
-            include=["documents", "metadatas"]
+        # Step 3: Search vector database
+        results = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=self.top_k,
+            include=["documents", "metadatas", "distances"]
         )
         
-        if not results or not results.get('documents'):
-            return []
+        print(f"🎯 Searching for top {self.top_k} results")
+        print(f"📊 Found {len(results['ids'][0])} relevant chunks")
         
+        # Step 4: Process results and filter by similarity
         docs = []
-        for content, metadata in zip(results['documents'], results['metadatas']):
-            doc = Document(page_content=content, metadata=metadata)
-            docs.append(doc)
+        for i, (doc_id, distance, content, metadata) in enumerate(zip(
+            results['ids'][0],
+            results['distances'][0],
+            results['documents'][0],
+            results['metadatas'][0]
+        )):
+            # Convert distance to similarity
+            similarity = 1 - (distance / 2)  # Normalize cosine distance
+            
+            # Filter by threshold
+            if similarity >= self.similarity_threshold:
+                # Add similarity to metadata
+                metadata['similarity_score'] = similarity
+                
+                # Create Document
+                doc = Document(
+                    page_content=content,
+                    metadata=metadata
+                )
+                docs.append(doc)
+                
+                # Print info
+                print(f"\n{i+1}. [{similarity:.3f}] "
+                      f"{metadata.get('jenjang', '?')} - "
+                      f"{metadata.get('tahun', '?')}")
+                print(f"   Content preview: {content[:100]}...")
         
+        # # ✅ Check if enough relevant docs
+        # if len(docs) < self.min_docs_required:
+        #     print(f"\n⚠️ WARNING: Only {len(docs)} docs above threshold {self.similarity_threshold}")
+        #     print(f"   Required: {self.min_docs_required}")
+        #     print(f"   → Returning empty (will trigger 'tidak menemukan' response)")
+        #     return []
+        
+        print(f"\n✅ Filtered to {len(docs)} documents (threshold: {self.similarity_threshold})")
         return docs
-    
-    def get_available_metadata(self) -> Dict[str, List[str]]:
-        """
-        Get unique values untuk setiap metadata field
-        Useful untuk UI filtering
-        """
-        try:
-            # Get all documents
-            all_data = self.vectorstore._collection.get(
-                include=["metadatas"]
-            )
-            
-            if not all_data or not all_data.get('metadatas'):
-                return {}
-            
-            # Collect unique values
-            jenjang_set = set()
-            cabang_set = set()
-            tahun_set = set()
-            kategori_set = set()
-            
-            for meta in all_data['metadatas']:
-                if meta:
-                    if meta.get('jenjang'):
-                        jenjang_set.add(meta['jenjang'])
-                    if meta.get('cabang'):
-                        cabang_set.add(meta['cabang'])
-                    if meta.get('tahun'):
-                        tahun_set.add(meta['tahun'])
-                    if meta.get('kategori'):
-                        kategori_set.add(meta['kategori'])
-            
-            return {
-                'jenjang': sorted(list(jenjang_set)),
-                'cabang': sorted(list(cabang_set)),
-                'tahun': sorted(list(tahun_set)),
-                'kategori': sorted(list(kategori_set))
-            }
-            
-        except Exception as e:
-            print(f"Error getting metadata: {e}")
-            return {}
 
 
 # ============================================================================
-# ENHANCED QUERY CHAIN - dengan metadata-aware prompt
+# ENHANCED QUERY CHAIN - SIMPLIFIED
 # ============================================================================
 
 class EnhancedQueryChain:
     """
-    Query chain yang metadata-aware
+    Simplified query chain
+    
+    Flow:
+    1. Retrieve documents (embedding search)
+    2. Augment prompt with context
+    3. Generate response
     """
     
     def __init__(
@@ -270,35 +128,94 @@ class EnhancedQueryChain:
         self.system_prompt = system_prompt
         self.query_prompt = query_prompt
     
-    def query(
-        self,
-        question: str,
-        filters: Optional[Dict] = None
-    ) -> Dict[str, any]:
-        """
-        Execute query dengan metadata context
+    def query(self, question: str) -> Dict:
+        print(f"\n{'='*60}")
+        print(f"🚀 RAG PIPELINE START")
+        print(f"{'='*60}")
+        print(f"❓ Question: {question}")
         
-        Returns:
-            Dict dengan 'answer', 'sources', 'metadata'
-        """
         # Retrieve documents
-        docs = self.retriever.retrieve(question, filters)
+        docs = self.retriever.retrieve(question)
         
+        # ✅ Jika tidak ada dokumen relevan
         if not docs:
+            print(f"\n⚠️ NO RELEVANT DOCUMENTS FOUND")
             return {
-                'answer': "Maaf, saya tidak menemukan informasi yang relevan dalam database.",
+                'answer': "Maaf, saya tidak menemukan informasi yang relevan tentang pertanyaan Anda dalam database. Silakan hubungi customer service untuk informasi lebih lanjut.",
                 'sources': [],
-                'metadata': {}
+                'metadata': {
+                    'num_sources': 0,
+                    'avg_similarity': 0,
+                    'relevance_check': 'FAILED - No relevant docs'
+                }
             }
         
-        # Build context dengan metadata info
+        # ✅ Check average similarity
+        avg_similarity = np.mean([doc.metadata['similarity_score'] for doc in docs])
+        
+        if avg_similarity < 0.6:
+            print(f"\n⚠️ LOW AVERAGE SIMILARITY: {avg_similarity:.3f}")
+            return {
+                'answer': "Maaf, saya tidak yakin dengan informasi yang ditemukan. Silakan verifikasi langsung dengan customer service.",
+                'sources': [],
+                'metadata': {
+                    'num_sources': len(docs),
+                    'avg_similarity': avg_similarity,
+                    'relevance_check': 'FAILED - Low similarity'
+                }
+            }
+        
+        # Build context & generate response
+        context = self._build_context(docs)
+        
+        print(f"\n📝 CONTEXT BUILT:")
+        print(f"   Sources: {len(docs)}")
+        print(f"   Avg Similarity: {avg_similarity:.3f}")
+        print(f"   Context length: {len(context)} chars")
+        
+        # Generate response
+        full_prompt = f"""{self.system_prompt}
+
+{self.query_prompt.format(question=question, context=context)}"""
+        
+        print(f"\n🤖 GENERATING RESPONSE...")
+        answer = self.llm.invoke(full_prompt).content
+        
+        # Prepare sources
+        sources = [
+            {
+                'source': doc.metadata.get('source', 'Unknown'),
+                'jenjang': doc.metadata.get('jenjang', 'Unknown'),
+                'cabang': doc.metadata.get('cabang', 'Unknown'),
+                'tahun': doc.metadata.get('tahun', 'Unknown'),
+                'similarity': doc.metadata.get('similarity_score', 0)
+            }
+            for doc in docs
+        ]
+        
+        print(f"\n✅ RESPONSE GENERATED")
+        print(f"{'='*60}\n")
+        
+        return {
+            'answer': answer,
+            'sources': sources,
+            'metadata': {
+                'num_sources': len(sources),
+                'avg_similarity': avg_similarity,
+                'max_similarity': max([s['similarity'] for s in sources]),
+                'min_similarity': min([s['similarity'] for s in sources]),
+                'relevance_check': 'PASSED'
+            }
+        }
+    
+    def _build_context(self, docs: List[Document]) -> str:
+        """Build context string from documents"""
         context_parts = []
-        sources = []
         
         for i, doc in enumerate(docs):
             meta = doc.metadata
             
-            # Format metadata info
+            # Format metadata
             meta_info = f"[Dokumen {i+1}]"
             if meta.get('jenjang'):
                 meta_info += f" Jenjang: {meta['jenjang']}"
@@ -306,33 +223,9 @@ class EnhancedQueryChain:
                 meta_info += f" | Cabang: {meta['cabang']}"
             if meta.get('tahun'):
                 meta_info += f" | Tahun: {meta['tahun']}"
+            if meta.get('similarity_score'):
+                meta_info += f" | Relevance: {meta['similarity_score']:.1%}"
             
             context_parts.append(f"{meta_info}\n{doc.page_content}")
-            
-            # Track sources
-            sources.append({
-                'source': meta.get('source', 'Unknown'),
-                'jenjang': meta.get('jenjang', 'Unknown'),
-                'cabang': meta.get('cabang', 'Unknown'),
-                'tahun': meta.get('tahun', 'Unknown')
-            })
         
-        context = "\n\n---\n\n".join(context_parts)
-        
-        # Format prompt
-        full_prompt = f"""{self.system_prompt}
-
-{       self.query_prompt.format(question=question, context=context)}"""
-        
-        # Get answer from LLM
-        answer = self.llm.invoke(full_prompt).content
-        
-        return {
-            'answer': answer,
-            'sources': sources,
-            'metadata': {
-                'num_sources': len(sources),
-                'filters_used': filters
-            }
-        }
-
+        return "\n\n---\n\n".join(context_parts)

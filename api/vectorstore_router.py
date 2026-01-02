@@ -72,10 +72,12 @@ else:
 # Setup ChromaDB
 # ==============================
 chroma_cfg = config["vectordb"]["chroma"]
+collection_metadata = {"hnsw:space": chroma_cfg.get("distance_function", "cosine")}
 vectorstore = Chroma(
     collection_name=chroma_cfg["collection_name"],
     embedding_function=embeddings,
-    persist_directory=chroma_cfg["persist_directory"]
+    persist_directory=chroma_cfg["persist_directory"],
+    collection_metadata=collection_metadata
 )
 
 # ==============================

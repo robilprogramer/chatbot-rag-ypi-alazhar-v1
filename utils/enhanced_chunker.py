@@ -56,26 +56,27 @@ class EnhancedChunker:
            
     def _build_fixed_size_splitter(self):
         cfg = self.chunking_cfg.get("fixed_size", {})
+        chunk_size = cfg.get("chunk_size", 1000)
+        chunk_overlap = cfg.get("chunk_overlap", 200)
+        separators = cfg.get("separators", ["\n\n", "\n", " ", ""])
         return RecursiveCharacterTextSplitter(
-            chunk_size=cfg.get("chunk_size", 1000),
-            chunk_overlap=cfg.get("chunk_overlap", 200),
-            separators=cfg.get("separators", ["\n\n", "\n", " ", ""]),
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+            separators=separators,
             length_function=len,
         )
 
     def _build_semantic_splitter(self):
         cfg = self.chunking_cfg.get("semantic", {})
+        breakpoint_threshold_type = cfg.get("breakpoint_threshold_type", "percentile")
+        breakpoint_threshold_amount = cfg.get("breakpoint_threshold", 95)
 
         embeddings = OpenAIEmbeddings() if self.strategy == "semantic" else None
 
         return SemanticChunker(
             embeddings=embeddings,
-            breakpoint_threshold_type=cfg.get(
-                "breakpoint_threshold_type", "percentile"
-            ),
-            breakpoint_threshold=cfg.get(
-                "breakpoint_threshold", 95
-            ),
+            breakpoint_threshold_type=breakpoint_threshold_type,
+            breakpoint_threshold_amount=breakpoint_threshold_amount,
         )
     def chunk_with_metadata(
         self,

@@ -4,7 +4,9 @@ from api.chunking import router as chunking_router
 from api.vectorstore_router import router as vectorstore_router
 from api.embeding import router as embedding_router  # ⬅️ TAMBAH INI
 from api.chat import router as chat_router  # ⬅️ TAMBAH INI
+# from api.chat_enhanced import router as chat_router  # ⬅️ TAMBAH INI
 from api.document_router import router as document_router
+from api.statistics import router as statistics_router
 app = FastAPI(
     title="Chatbot API",
     version="1.0.0"
@@ -24,3 +26,4 @@ app.include_router(vectorstore_router)
 app.include_router(embedding_router)      
 app.include_router(chat_router)  
 app.include_router(document_router)
+app.include_router(statistics_router)

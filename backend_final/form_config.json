@@ -1,0 +1,302 @@
+{
+  "form_name": "YPI Al-Azhar Student Registration",
+  "version": "1.0",
+  "sections": [
+    {
+      "name": "school_info",
+      "label": "Informasi Sekolah",
+      "description": "Pilihan sekolah dan program yang dituju",
+      "required_fields": 2,
+      "skippable": false,
+      "fields": [
+        {
+          "name": "nama_sekolah",
+          "label": "Nama Sekolah",
+          "type": "select",
+          "required": true,
+          "skippable": false,
+          "options": [
+            "TK Islam Al Azhar 1 Kebayoran Baru",
+            "SD Islam Al Azhar 1 Kebayoran Baru",
+            "SMP Al Azhar 1 Kebayoran Baru",
+            "SMA Al Azhar 1 Kebayoran Baru",
+            "TK Al Azhar Kemang",
+            "SD Al Azhar Kemang"
+          ],
+          "help_text": "Pilih unit sekolah yang dituju"
+        },
+        {
+          "name": "tahun_ajaran",
+          "label": "Tahun Ajaran",
+          "type": "select",
+          "required": false,
+          "skippable": true,
+          "options": ["2025/2026", "2026/2027"],
+          "help_text": "Tahun ajaran pendaftaran"
+        },
+        {
+          "name": "program",
+          "label": "Program",
+          "type": "select",
+          "required": true,
+          "skippable": false,
+          "options": ["Reguler", "Bilingual"],
+          "help_text": "Program pembelajaran yang dipilih"
+        },
+        {
+          "name": "tingkatan",
+          "label": "Tingkatan/Kelas",
+          "type": "select",
+          "required": true,
+          "skippable": false,
+          "options": [
+            "Playgroup", "TK A", "TK B",
+            "Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5", "Kelas 6",
+            "Kelas 7", "Kelas 8", "Kelas 9",
+            "Kelas 10", "Kelas 11", "Kelas 12"
+          ],
+          "help_text": "Tingkatan kelas yang dituju"
+        },
+        {
+          "name": "gelombang",
+          "label": "Gelombang Pendaftaran",
+          "type": "text",
+          "required": false,
+          "skippable": true,
+          "placeholder": "PMB Tahun Ajaran 2026/2027"
+        }
+      ]
+    },
+    {
+      "name": "student_data",
+      "label": "Data Siswa",
+      "description": "Informasi pribadi calon siswa",
+      "required_fields": 3,
+      "skippable": false,
+      "fields": [
+        {
+          "name": "nama_lengkap",
+          "label": "Nama Lengkap Siswa",
+          "type": "text",
+          "required": true,
+          "skippable": false,
+          "placeholder": "Nama lengkap sesuai akta kelahiran"
+        },
+        {
+          "name": "tempat_lahir",
+          "label": "Tempat Lahir",
+          "type": "text",
+          "required": true,
+          "skippable": false
+        },
+        {
+          "name": "tanggal_lahir",
+          "label": "Tanggal Lahir",
+          "type": "date",
+          "required": true,
+          "skippable": false,
+          "validation_pattern": "^\\d{2}/\\d{2}/\\d{4}$",
+          "placeholder": "DD/MM/YYYY"
+        },
+        {
+          "name": "jenis_kelamin",
+          "label": "Jenis Kelamin",
+          "type": "select",
+          "required": true,
+          "skippable": false,
+          "options": ["Laki-laki", "Perempuan"]
+        },
+        {
+          "name": "agama",
+          "label": "Agama",
+          "type": "select",
+          "required": false,
+          "skippable": true,
+          "options": ["Islam", "Kristen", "Katolik", "Hindu", "Buddha", "Konghucu"]
+        },
+        {
+          "name": "alamat",
+          "label": "Alamat Lengkap",
+          "type": "textarea",
+          "required": false,
+          "skippable": true,
+          "placeholder": "Alamat lengkap tempat tinggal"
+        },
+        {
+          "name": "no_telepon",
+          "label": "Nomor Telepon Siswa",
+          "type": "phone",
+          "required": false,
+          "skippable": true,
+          "validation_pattern": "^[0-9]{10,15}$"
+        },
+        {
+          "name": "email",
+          "label": "Email Siswa",
+          "type": "email",
+          "required": false,
+          "skippable": true
+        }
+      ]
+    },
+    {
+      "name": "parent_data",
+      "label": "Data Orang Tua",
+      "description": "Informasi orang tua/wali siswa",
+      "required_fields": 2,
+      "skippable": false,
+      "fields": [
+        {
+          "name": "nama_ayah",
+          "label": "Nama Ayah",
+          "type": "text",
+          "required": false,
+          "skippable": true
+        },
+        {
+          "name": "pekerjaan_ayah",
+          "label": "Pekerjaan Ayah",
+          "type": "text",
+          "required": false,
+          "skippable": true
+        },
+        {
+          "name": "no_telepon_ayah",
+          "label": "Nomor Telepon Ayah",
+          "type": "phone",
+          "required": false,
+          "skippable": true,
+          "validation_pattern": "^[0-9]{10,15}$"
+        },
+        {
+          "name": "nama_ibu",
+          "label": "Nama Ibu",
+          "type": "text",
+          "required": false,
+          "skippable": true
+        },
+        {
+          "name": "pekerjaan_ibu",
+          "label": "Pekerjaan Ibu",
+          "type": "text",
+          "required": false,
+          "skippable": true
+        },
+        {
+          "name": "no_telepon_ibu",
+          "label": "Nomor Telepon Ibu",
+          "type": "phone",
+          "required": false,
+          "skippable": true,
+          "validation_pattern": "^[0-9]{10,15}$"
+        },
+        {
+          "name": "nama_wali",
+          "label": "Nama Wali (jika ada)",
+          "type": "text",
+          "required": false,
+          "skippable": true
+        },
+        {
+          "name": "no_telepon_wali",
+          "label": "Nomor Telepon Wali",
+          "type": "phone",
+          "required": false,
+          "skippable": true,
+          "validation_pattern": "^[0-9]{10,15}$"
+        }
+      ]
+    },
+    {
+      "name": "academic_data",
+      "label": "Data Akademik",
+      "description": "Riwayat pendidikan sebelumnya",
+      "required_fields": 0,
+      "skippable": true,
+      "fields": [
+        {
+          "name": "nama_sekolah_asal",
+          "label": "Nama Sekolah Asal",
+          "type": "text",
+          "required": false,
+          "skippable": true,
+          "depends_on": {
+            "tingkatan": [
+              "Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5", "Kelas 6",
+              "Kelas 7", "Kelas 8", "Kelas 9", "Kelas 10", "Kelas 11", "Kelas 12"
+            ]
+          }
+        },
+        {
+          "name": "alamat_sekolah_asal",
+          "label": "Alamat Sekolah Asal",
+          "type": "text",
+          "required": false,
+          "skippable": true
+        },
+        {
+          "name": "tahun_lulus",
+          "label": "Tahun Lulus",
+          "type": "text",
+          "required": false,
+          "skippable": true
+        },
+        {
+          "name": "nilai_rata_rata",
+          "label": "Nilai Rata-rata",
+          "type": "text",
+          "required": false,
+          "skippable": true
+        }
+      ]
+    },
+    {
+      "name": "documents",
+      "label": "Dokumen Persyaratan",
+      "description": "Upload dokumen yang diperlukan",
+      "required_fields": 0,
+      "skippable": true,
+      "fields": [
+        {
+          "name": "akta_kelahiran",
+          "label": "Akta Kelahiran",
+          "type": "file",
+          "required": false,
+          "skippable": true,
+          "help_text": "Format: PDF, JPG, PNG (Max 5MB)"
+        },
+        {
+          "name": "kartu_keluarga",
+          "label": "Kartu Keluarga",
+          "type": "file",
+          "required": false,
+          "skippable": true
+        },
+        {
+          "name": "foto_siswa",
+          "label": "Foto Siswa 3x4",
+          "type": "file",
+          "required": false,
+          "skippable": true
+        },
+        {
+          "name": "ijazah_terakhir",
+          "label": "Ijazah Terakhir",
+          "type": "file",
+          "required": false,
+          "skippable": true,
+          "depends_on": {
+            "tingkatan": ["Kelas 7", "Kelas 8", "Kelas 9", "Kelas 10", "Kelas 11", "Kelas 12"]
+          }
+        },
+        {
+          "name": "rapor_terakhir",
+          "label": "Rapor Semester Terakhir",
+          "type": "file",
+          "required": false,
+          "skippable": true
+        }
+      ]
+    }
+  ]
+}

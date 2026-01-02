@@ -6,7 +6,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'
 
 export class ChatbotService {
   private static getEndpoint(mode: ChatbotMode): string {
-    return mode === 'informational' 
+    return mode === 'informational'
       ? `${BASE_URL}/api/chat`
       : `${BASE_URL}/api/transaction`;
   }
@@ -18,7 +18,7 @@ export class ChatbotService {
   ): Promise<ChatResponse> {
     try {
       const endpoint = this.getEndpoint(mode);
-      
+
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -27,6 +27,7 @@ export class ChatbotService {
         body: JSON.stringify({
           question,
           session_id: sessionId,
+          "include_history": true,
           mode,
         } as ChatRequest),
       });
@@ -54,7 +55,7 @@ export class ChatbotService {
     onChunk: (chunk: string) => void
   ): Promise<void> {
     const endpoint = this.getEndpoint(mode);
-    
+
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -76,7 +77,7 @@ export class ChatbotService {
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-      
+
       const chunk = decoder.decode(value);
       onChunk(chunk);
     }

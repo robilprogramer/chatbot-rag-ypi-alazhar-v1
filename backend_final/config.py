@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     # LLM API Configuration (pilih salah satu)
     LLM_PROVIDER: str = "openai"  # options: openai, anthropic, azure
     
+    # OpenAI
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     OPENAI_MODEL: str = "gpt-4o-mini"
     OPENAI_TEMPERATURE: float = 0.7

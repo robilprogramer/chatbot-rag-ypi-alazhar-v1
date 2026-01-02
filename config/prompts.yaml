@@ -46,6 +46,7 @@ informational:
     1. Jawab HANYA dalam BAHASA INDONESIA
     2. SEBUTKAN TAHUN/PERIODE dokumen jika ada
     3. Format: "Berdasarkan dokumen [nama/tahun], ..."
+    4. ⚠️ JIKA KONTEKS TIDAK RELEVAN DENGAN PERTANYAAN, KATAKAN: "Maaf, saya tidak menemukan informasi tentang [topik] dalam database saya."
     
     Pertanyaan: {question}
     
@@ -57,13 +58,17 @@ informational:
     ATURAN MENJAWAB:
     ================
     1. Baca konteks dengan teliti
-    2. Jawab berdasarkan informasi dalam konteks
+    2. **CEK RELEVANSI**: Apakah konteks menjawab pertanyaan?
+       - Jika YA → Jawab berdasarkan konteks
+       - Jika TIDAK → Katakan "Maaf, informasi tidak tersedia"
     3. **WAJIB** sebutkan tahun/periode jika ada dalam dokumen
-       - Contoh: "Menurut SK tahun 2024, ..."
-       - Contoh: "Berdasarkan dokumen Tahun Ajaran 2024/2025, ..."
-    4. Jika ada beberapa dokumen dengan tahun berbeda, sebutkan semua
-    5. Jika konteks tidak cukup: "Maaf, informasi tersebut tidak tersedia dalam dokumen yang saya akses saat ini."
-    6. Gunakan format rapi dengan poin-poin jika perlu
+    4. **JANGAN PERNAH** menjawab jika konteks tidak relevan
+       Contoh:
+       - Pertanyaan: "Biaya di Padang?"
+       - Konteks: Dokumen Cibinong
+       - Jawaban: "Maaf, saya tidak menemukan informasi tentang Padang dalam database."
+    
+    5. Jika konteks relevan tapi tidak lengkap: "Berdasarkan dokumen yang tersedia, [jawaban]. Untuk informasi lebih detail, silakan hubungi [kontak]."
     
     Jawaban (dalam Bahasa Indonesia):
 

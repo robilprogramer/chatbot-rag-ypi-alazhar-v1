@@ -38,7 +38,7 @@ ocr:
 
 # Chunking Configuration
 chunking:
-  strategy: "fixed_size"  # fixed_size or semantic
+  strategy: "semantic"  # fixed_size or semantic
   fixed_size:
     chunk_size: 1000
     chunk_overlap: 200
@@ -49,7 +49,7 @@ chunking:
 
 # Embedding Configuration
 embeddings:
-  model: "huggingface"  # openai or huggingface
+  model: "openai"  # openai or huggingface
   openai:
     model_name: "text-embedding-3-small"
     dimensions: 1536
@@ -62,9 +62,9 @@ embeddings:
 # RETRIEVAL CONFIGURATION - WITH RERANKER
 # ============================================================================
 retrieval:
-  method: "hybrid"  # dense, bm25, or hybrid
+  method: "semantic"  # dense, bm25, or hybrid
   top_k: 5  # Ambil lebih banyak untuk di-rerank (jika reranker enabled)
-  
+  similarity_threshold: 0.7  # Filter by similarity (0-1)
   hybrid:
     dense_weight: 0.7
     bm25_weight: 0.3

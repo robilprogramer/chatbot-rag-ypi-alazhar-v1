@@ -102,7 +102,7 @@ class MetadataExtractor:
 
         merged = {}
         for key in ["jenjang", "cabang", "tahun", "kategori"]:
-            merged[key] = f_meta.get(key) or c_meta.get(key) or "Unknown"
+            merged[key] = f_meta.get(key) or c_meta.get(key) or "All"
 
         merged["source"] = f_meta["source"]
         merged["filename"] = f_meta["filename"]
